@@ -68,83 +68,44 @@ function factorial(num) {
   return num * factorial(num - 1);
 }
 
-function mazeSolver(maze) {
-
-  const length = maze[0].length;
-  const height = maze.length;
-  let x = 0;
-  let y = 0;
-  let path = [[0, 0]];
-  let directions = '';
-
-  let results = [];
-
-  function directionPicker(maze, x, y, path, directions) {
-    console.log(path);
-    console.log(x, y);
-    console.log(maze[0][0]);
-    console.log(results);
-    if ((x === (length - 1)) && (y === (height - 1))) {
-      results.push(directions);
+const mazeAll = function(labyrinth, position=0, row, col, direction='S',path){
+  if(col<0 || row < 0){
       return;
-    } else {
-      if (maze[y + 1][x] !== '*' && (y + 1 < height)) {
-        let option = [x, y + 1];
-        if (!(path.filter(point => point == option))) {
-          let newDirections = directions + 'D';
-          let newPath = [...path];
-          newPath.push(option);
-          y++;
-          directionPicker(maze, x, y, newPath, newDirections);
-        }
-      } 
-      if (maze[y][x + 1] !== '*' && (x + 1 < length)) {
-        let option = [x, y + 1];
-        if (!(path.filter(point => point == option))) {
-          let newDirections = directions + 'R';
-          let newPath = [...path];
-          newPath.push(option);
-          x++;
-          directionPicker(maze, x, y, newPath, newDirections);
-        }
-      } 
-      if (maze[y - 1][x] !== '*' && ((y - 1) >= 0)) {
-        let option = [x, y - 1];
-        if (!(path.filter(point => point == option))) {
-          let newDirections = directions + 'U';
-          let newPath = [...path];
-          newPath.push(option);
-          y--;
-          directionPicker(maze, x, y, newPath, newDirections);
-        }
-      } 
-      if (maze[y][x - 1] !== '*' && ((x - 1) >=0)) {
-        let option = [x, y - 1];
-        if (!(path.filter(point => point == option))) {
-          let newDirections = directions + 'R';
-          let newPath = [...path];
-          newPath.push(option);
-          x--;
-          directionPicker(maze, x, y, newPath, newDirections);
-        }
-      } 
-      
-    }
   }
-  directionPicker(maze, x, y, path, directions);
-  return results;
+  if(col>=labyrinth[0].length || row>=labyrinth.length){
+      return;
+  }
+ 
+  path[position] = direction;
+  position++;
+
+  if (labyrinth[row][col] === 'e'){
+      PrintPath(path, 1, position - 1);
+      return;
+  }
+  if (labyrinth[row][col] === ' ') {
+      // The current cell is free. Mark it as visited
+      labyrinth[row][col] = 's';
+      // Invoke recursion to explore all possible directions
+      mazeAll(labyrinth,position,row, col - 1, 'L',path); // left
+      mazeAll(labyrinth,position,row - 1, col, 'U',path); // up
+      mazeAll(labyrinth,position,row, col + 1, 'R',path); // right
+      mazeAll(labyrinth,position,row + 1, col, 'D',path); // down
+      // Mark back the current cell as free
+      labyrinth[row][col] = ' ';
+  }
+  // Remove the last direction from the path
+  position--;
+
 }
 
 console.log(
   mazeSolver([
-    [' ', ' ', ' ', '*', ' ', ' ', ' '],
-    ['*', '*', ' ', '*', ' ', '*', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', ' '],
-    [' ', '*', '*', '*', '*', '*', ' '],
-    [' ', ' ', ' ', ' ', ' ', ' ', 'e']
-  ])
+    [' ', ' ', ' '],
+    [' ', '*', ' '],
+    [' ', ' ', 'e']
+])
 );
-
 
 function anagram(word) {
   let results = [];
